@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Colaboradores - RBR Representações</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23003E7E'/%3E%3Ctext x='50' y='68' font-size='55' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">R</div>
+    <div class="brand-text">
+      <strong>RBR</strong>
+      <span>Representações</span>
+    </div>
+    <button class="sidebar-close" id="sidebarClose"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-view="dashboard">
+      <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+    </button>
+    <button class="nav-item" data-view="colaboradores">
+      <i class="fa-solid fa-users"></i><span>Colaboradores</span>
+    </button>
+    <button class="nav-item" data-view="aniversariantes">
+      <i class="fa-solid fa-cake-candles"></i><span>Aniversariantes</span>
+    </button>
+    <button class="nav-item" data-view="empresa">
+      <i class="fa-solid fa-building-flag"></i><span>Aniversário de Empresa</span>
+    </button>
+    <button class="nav-item" data-view="relatorios">
+      <i class="fa-solid fa-file-lines"></i><span>Relatórios</span>
+    </button>
+    <button class="nav-item" data-view="configuracoes">
+      <i class="fa-solid fa-gear"></i><span>Configurações</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button id="darkModeToggleSidebar" class="dark-toggle-mini">
+      <i class="fa-solid fa-moon"></i><span>Modo escuro</span>
+    </button>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ===== MAIN ===== -->
+<div class="main-wrap">
+
+  <header class="topbar">
+    <button class="icon-btn menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+
+    <div class="search-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="globalSearch" placeholder="Pesquisar por nome, cidade, estado, cargo, departamento...">
+    </div>
+
+    <div class="topbar-actions">
+      <button class="icon-btn" id="darkModeToggle" title="Modo escuro"><i class="fa-solid fa-moon"></i></button>
+      <button class="btn btn-primary" id="btnNovoColaborador">
+        <i class="fa-solid fa-user-plus"></i><span>Novo Colaborador</span>
+      </button>
+      <div class="user-chip">
+        <div class="user-avatar" id="topUserAvatar">TR</div>
+        <div class="user-info">
+          <strong id="topUserName">Marketing RBR</strong>
+          <span>Marketing &amp; BI</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content" id="content">
+
+    <!-- ===================== DASHBOARD ===================== -->
+    <section class="view" id="view-dashboard">
+      <div class="view-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p class="subtitle">Visão geral do quadro de colaboradores RBR</p>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon blue"><i class="fa-solid fa-users"></i></div>
+          <div><span class="kpi-value" id="kpiTotal">0</span><span class="kpi-label">Total de Colaboradores</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon red"><i class="fa-solid fa-cake-candles"></i></div>
+          <div><span class="kpi-value" id="kpiBirthdays">0</span><span class="kpi-label">Aniversariantes do Mês</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon blue"><i class="fa-solid fa-id-card-clip"></i></div>
+          <div><span class="kpi-value" id="kpiAdmissions">0</span><span class="kpi-label">Admissões do Mês</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon green"><i class="fa-solid fa-circle-check"></i></div>
+          <div><span class="kpi-value" id="kpiActive">0</span><span class="kpi-label">Colaboradores Ativos</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon red"><i class="fa-solid fa-person-walking-luggage"></i></div>
+          <div><span class="kpi-value" id="kpiPromoters">0</span><span class="kpi-label">Promotores</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon blue"><i class="fa-solid fa-briefcase"></i></div>
+          <div><span class="kpi-value" id="kpiAdmin">0</span><span class="kpi-label">Administrativo</span></div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Colaboradores por Estado</h3>
+          <canvas id="chartEstado"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Colaboradores por Departamento</h3>
+          <canvas id="chartDepartamento"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Colaboradores por Gestor</h3>
+          <canvas id="chartGestor"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== COLABORADORES ===================== -->
+    <section class="view hidden" id="view-colaboradores">
+      <div class="view-header">
+        <div>
+          <h1>Colaboradores</h1>
+          <p class="subtitle">Gerencie o cadastro completo da equipe</p>
+        </div>
+        <button class="btn btn-primary" id="btnNovoColaborador2"><i class="fa-solid fa-user-plus"></i><span>Novo Colaborador</span></button>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" id="filterNome" placeholder="Nome...">
+        <select id="filterEstado"><option value="">Estado</option></select>
+        <select id="filterCidade"><option value="">Cidade</option></select>
+        <select id="filterDepartamento"><option value="">Departamento</option></select>
+        <select id="filterMarca"><option value="">Marca</option></select>
+        <select id="filterGestor"><option value="">Gestor</option></select>
+        <button class="btn btn-ghost" id="btnLimparFiltros"><i class="fa-solid fa-filter-circle-xmark"></i> Limpar</button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table id="employeeTable">
+            <thead>
+              <tr>
+                <th></th>
+                <th data-sort="nome">Nome <i class="fa-solid fa-sort"></i></th>
+                <th data-sort="cargo">Cargo <i class="fa-solid fa-sort"></i></th>
+                <th data-sort="departamento">Departamento <i class="fa-solid fa-sort"></i></th>
+                <th data-sort="cidade">Cidade <i class="fa-solid fa-sort"></i></th>
+                <th data-sort="estado">Estado <i class="fa-solid fa-sort"></i></th>
+                <th data-sort="dataNascimento">Nascimento <i class="fa-solid fa-sort"></i></th>
+                <th data-sort="dataAdmissao">Admissão <i class="fa-solid fa-sort"></i></th>
+                <th data-sort="status">Status <i class="fa-solid fa-sort"></i></th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="employeeTableBody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <span id="paginationInfo"></span>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ANIVERSARIANTES ===================== -->
+    <section class="view hidden" id="view-aniversariantes">
+      <div class="view-header">
+        <div>
+          <h1>Aniversariantes</h1>
+          <p class="subtitle" id="aniversariantesSubtitle">Aniversariantes do mês</p>
+        </div>
+      </div>
+      <div class="card-grid" id="birthdayGrid"></div>
+    </section>
+
+    <!-- ===================== ANIVERSÁRIO DE EMPRESA ===================== -->
+    <section class="view hidden" id="view-empresa">
+      <div class="view-header">
+        <div>
+          <h1>Aniversário de Empresa</h1>
+          <p class="subtitle">Tempo de casa e admissões a celebrar</p>
+        </div>
+      </div>
+      <div class="card-grid" id="companyAnniversaryGrid"></div>
+    </section>
+
+    <!-- ===================== RELATÓRIOS ===================== -->
+    <section class="view hidden" id="view-relatorios">
+      <div class="view-header">
+        <div>
+          <h1>Relatórios</h1>
+          <p class="subtitle">Importe e exporte a base de colaboradores</p>
+        </div>
+      </div>
+
+      <div class="report-grid">
+        <div class="report-card">
+          <i class="fa-solid fa-file-csv"></i>
+          <h3>Importar CSV</h3>
+          <p>Importe colaboradores em lote a partir de um arquivo CSV.</p>
+          <label class="btn btn-secondary file-btn">
+            <i class="fa-solid fa-upload"></i> Selecionar arquivo
+            <input type="file" id="importCsvInput" accept=".csv" hidden>
+          </label>
+        </div>
+        <div class="report-card">
+          <i class="fa-solid fa-file-export"></i>
+          <h3>Exportar CSV</h3>
+          <p>Baixe a base completa em formato CSV.</p>
+          <button class="btn btn-secondary" id="btnExportCsv"><i class="fa-solid fa-download"></i> Exportar CSV</button>
+        </div>
+        <div class="report-card">
+          <i class="fa-solid fa-file-excel"></i>
+          <h3>Exportar Excel</h3>
+          <p>Baixe a base completa em planilha Excel (.xls).</p>
+          <button class="btn btn-secondary" id="btnExportExcel"><i class="fa-solid fa-download"></i> Exportar Excel</button>
+        </div>
+        <div class="report-card">
+          <i class="fa-solid fa-file-code"></i>
+          <h3>Exportar JSON</h3>
+          <p>Baixe a base completa em formato JSON.</p>
+          <button class="btn btn-secondary" id="btnExportJson"><i class="fa-solid fa-download"></i> Exportar JSON</button>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:24px;">
+        <h3 style="padding:18px 20px 0;">Resumo por Departamento</h3>
+        <div class="table-scroll">
+          <table id="summaryTable">
+            <thead><tr><th>Departamento</th><th>Colaboradores</th><th>% do Total</th></tr></thead>
+            <tbody id="summaryTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CONFIGURAÇÕES ===================== -->
+    <section class="view hidden" id="view-configuracoes">
+      <div class="view-header">
+        <div>
+          <h1>Configurações</h1>
+          <p class="subtitle">Preferências do sistema</p>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-row">
+          <div>
+            <strong>Modo escuro</strong>
+            <p>Alterne entre tema claro e escuro.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="darkModeSwitch">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="settings-row">
+          <div>
+            <strong>Limpar base de dados</strong>
+            <p>Remove todos os colaboradores salvos neste navegador.</p>
+          </div>
+          <button class="btn btn-danger" id="btnClearDb"><i class="fa-solid fa-trash"></i> Limpar tudo</button>
+        </div>
+        <div class="settings-row">
+          <div>
+            <strong>Restaurar dados de exemplo</strong>
+            <p>Recarrega a equipe RBR de exemplo (substitui a base atual).</p>
+          </div>
+          <button class="btn btn-secondary" id="btnSeedDb"><i class="fa-solid fa-rotate"></i> Restaurar</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===== MODAL: FORM COLABORADOR ===== -->
+<div class="modal-overlay" id="formModalOverlay">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h2 id="formModalTitle">Novo Colaborador</h2>
+      <button class="icon-btn" id="formModalClose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="employeeForm" class="modal-body">
+      <input type="hidden" id="empId">
+
+      <div class="photo-upload">
+        <img id="photoPreview" src="" alt="" class="hidden">
+        <div id="photoPlaceholder" class="photo-placeholder"><i class="fa-solid fa-camera"></i></div>
+        <label class="btn btn-ghost file-btn">
+          <i class="fa-solid fa-upload"></i> Enviar foto
+          <input type="file" id="empFotoInput" accept="image/*" hidden>
+        </label>
+      </div>
+
+      <h4 class="form-section-title"><i class="fa-solid fa-id-badge"></i> Dados Pessoais</h4>
+      <div class="form-grid">
+        <div class="form-field span-2"><label>Nome completo *</label><input type="text" id="empNome" required></div>
+        <div class="form-field"><label>Nome para exibição</label><input type="text" id="empApelido"></div>
+        <div class="form-field"><label>CPF</label><input type="text" id="empCpf" placeholder="000.000.000-00"></div>
+        <div class="form-field"><label>RG</label><input type="text" id="empRg"></div>
+        <div class="form-field"><label>Sexo</label>
+          <select id="empSexo"><option value="">Selecione</option><option>Masculino</option><option>Feminino</option><option>Outro</option></select>
+        </div>
+        <div class="form-field"><label>Data de nascimento</label><input type="date" id="empNascimento"></div>
+        <div class="form-field"><label>Estado civil</label>
+          <select id="empEstadoCivil"><option value="">Selecione</option><option>Solteiro(a)</option><option>Casado(a)</option><option>União Estável</option><option>Divorciado(a)</option><option>Viúvo(a)</option></select>
+        </div>
+      </div>
+
+      <h4 class="form-section-title"><i class="fa-solid fa-address-book"></i> Contato</h4>
+      <div class="form-grid">
+        <div class="form-field span-2"><label>E-mail</label><input type="email" id="empEmail"></div>
+        <div class="form-field"><label>Telefone</label><input type="text" id="empTelefone"></div>
+        <div class="form-field"><label>Celular</label><input type="text" id="empCelular"></div>
+      </div>
+
+      <h4 class="form-section-title"><i class="fa-solid fa-location-dot"></i> Endereço</h4>
+      <div class="form-grid">
+        <div class="form-field"><label>CEP</label><input type="text" id="empCep"></div>
+        <div class="form-field span-2"><label>Rua</label><input type="text" id="empRua"></div>
+        <div class="form-field"><label>Número</label><input type="text" id="empNumero"></div>
+        <div class="form-field"><label>Bairro</label><input type="text" id="empBairro"></div>
+        <div class="form-field"><label>Cidade</label><input type="text" id="empCidade"></div>
+        <div class="form-field"><label>Estado</label><input type="text" id="empEstado" placeholder="UF"></div>
+      </div>
+
+      <h4 class="form-section-title"><i class="fa-solid fa-building"></i> Empresa</h4>
+      <div class="form-grid">
+        <div class="form-field"><label>Matrícula</label><input type="text" id="empMatricula"></div>
+        <div class="form-field"><label>Data de admissão</label><input type="date" id="empAdmissao"></div>
+        <div class="form-field"><label>Cargo</label><input type="text" id="empCargo"></div>
+        <div class="form-field"><label>Departamento</label>
+          <select id="empDepartamento">
+            <option value="">Selecione</option>
+            <option>Comercial</option>
+            <option>Trade Marketing</option>
+            <option>Marketing</option>
+            <option>Administrativo</option>
+            <option>Promotores</option>
+            <option>TI / Suporte</option>
+            <option>Diretoria</option>
+          </select>
+        </div>
+        <div class="form-field"><label>Gestor</label><input type="text" id="empGestor"></div>
+        <div class="form-field"><label>Marca atendida</label>
+          <select id="empMarca">
+            <option value="">Selecione</option>
+            <option>Wega</option>
+            <option>Perfect Automotive</option>
+            <option>Rio Sulense</option>
+            <option>NGK</option>
+            <option>Magneti Marelli</option>
+            <option>TSA</option>
+            <option>CAR 80</option>
+            <option>OSRAM</option>
+            <option>Hipper Freios</option>
+            <option>Multimarcas</option>
+            <option>Outras</option>
+          </select>
+        </div>
+        <div class="form-field"><label>Status</label>
+          <select id="empStatus"><option>Ativo</option><option>Inativo</option><option>Férias</option><option>Afastado</option></select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="formCancelBtn">Cancelar</button>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Salvar Colaborador</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: PERFIL ===== -->
+<div class="modal-overlay" id="profileModalOverlay">
+  <div class="modal" id="profileModal">
+    <div class="modal-header">
+      <h2>Perfil do Colaborador</h2>
+      <button class="icon-btn" id="profileModalClose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="profileModalBody"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: CARTÃO (Gerar Card) ===== -->
+<div class="modal-overlay" id="cardModalOverlay">
+  <div class="modal modal-card">
+    <div class="modal-header">
+      <h2>Cartão Comemorativo</h2>
+      <button class="icon-btn" id="cardModalClose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="cardPreview" class="birthday-card"></div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="cardCopyBtn"><i class="fa-solid fa-copy"></i> Copiar texto</button>
+        <button class="btn btn-primary" id="cardDownloadBtn"><i class="fa-solid fa-download"></i> Baixar cartão (PNG)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: CONFIRMAÇÃO ===== -->
+<div class="modal-overlay" id="confirmModalOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-body confirm-body">
+      <div class="confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3 id="confirmTitle">Excluir colaborador?</h3>
+      <p id="confirmMessage">Esta ação não pode ser desfeita.</p>
+      <div class="modal-footer center">
+        <button class="btn btn-ghost" id="confirmCancelBtn">Cancelar</button>
+        <button class="btn btn-danger" id="confirmOkBtn">Excluir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button id="backToTop" class="back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
