@@ -39,6 +39,9 @@
     <button class="nav-item" data-view="empresa">
       <i class="fa-solid fa-building-flag"></i><span>Aniversário de Empresa</span>
     </button>
+    <button class="nav-item" data-view="clientes">
+      <i class="fa-solid fa-handshake"></i><span>Clientes/Parceiros</span>
+    </button>
     <button class="nav-item" data-view="relatorios">
       <i class="fa-solid fa-file-lines"></i><span>Relatórios</span>
     </button>
@@ -168,6 +171,7 @@
                 <th data-sort="estado">Estado <i class="fa-solid fa-sort"></i></th>
                 <th data-sort="dataNascimento">Nascimento <i class="fa-solid fa-sort"></i></th>
                 <th data-sort="dataAdmissao">Admissão <i class="fa-solid fa-sort"></i></th>
+                <th>Tempo de Casa</th>
                 <th data-sort="status">Status <i class="fa-solid fa-sort"></i></th>
                 <th>Ações</th>
               </tr>
@@ -202,6 +206,89 @@
         </div>
       </div>
       <div class="card-grid" id="companyAnniversaryGrid"></div>
+    </section>
+
+    <!-- ===================== CLIENTES / PARCEIROS ===================== -->
+    <section class="view hidden" id="view-clientes">
+      <div class="view-header">
+        <div>
+          <h1>Clientes/Parceiros</h1>
+          <p class="subtitle">Empresas parceiras e contatos comerciais</p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-secondary" id="btnNovoCliente"><i class="fa-solid fa-building"></i><span>Nova Empresa</span></button>
+          <button class="btn btn-primary" id="btnNovoContato"><i class="fa-solid fa-user-plus"></i><span>Novo Contato</span></button>
+        </div>
+      </div>
+
+      <div class="subtabs">
+        <button class="subtab-btn active" data-subtab="empresas">Empresas Parceiras</button>
+        <button class="subtab-btn" data-subtab="contatos">Contatos</button>
+        <button class="subtab-btn" data-subtab="clientAniversariantes">Aniversariantes do Mês</button>
+      </div>
+
+      <!-- Empresas -->
+      <div class="subtab-panel" id="subtab-empresas">
+        <div class="filter-bar">
+          <input type="text" id="filterClienteNome" placeholder="Buscar empresa...">
+          <select id="filterClienteEstado"><option value="">Estado</option></select>
+          <label class="btn btn-ghost file-btn">
+            <i class="fa-solid fa-upload"></i> Importar CSV
+            <input type="file" id="importClientesCsvInput" accept=".csv" hidden>
+          </label>
+          <button class="btn btn-ghost" id="btnExportClientesCsv"><i class="fa-solid fa-download"></i> Exportar CSV</button>
+        </div>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table id="clientesTable">
+              <thead>
+                <tr>
+                  <th data-sort="nome">Cliente <i class="fa-solid fa-sort"></i></th>
+                  <th data-sort="estado">Estado <i class="fa-solid fa-sort"></i></th>
+                  <th data-sort="dataFundacao">Aniversário da Empresa <i class="fa-solid fa-sort"></i></th>
+                  <th>Idade</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="clientesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contatos -->
+      <div class="subtab-panel hidden" id="subtab-contatos">
+        <div class="filter-bar">
+          <input type="text" id="filterContatoNome" placeholder="Buscar contato ou empresa...">
+          <label class="btn btn-ghost file-btn">
+            <i class="fa-solid fa-upload"></i> Importar CSV
+            <input type="file" id="importContatosCsvInput" accept=".csv" hidden>
+          </label>
+          <button class="btn btn-ghost" id="btnExportContatosCsv"><i class="fa-solid fa-download"></i> Exportar CSV</button>
+        </div>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table id="contatosTable">
+              <thead>
+                <tr>
+                  <th data-sort="nome">Nome <i class="fa-solid fa-sort"></i></th>
+                  <th data-sort="cargo">Cargo <i class="fa-solid fa-sort"></i></th>
+                  <th data-sort="empresa">Empresa <i class="fa-solid fa-sort"></i></th>
+                  <th data-sort="diaMes">Aniversário <i class="fa-solid fa-sort"></i></th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="contatosTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aniversariantes do mês (clientes + contatos) -->
+      <div class="subtab-panel hidden" id="subtab-clientAniversariantes">
+        <p class="subtitle" id="clientAniversariantesSubtitle" style="margin-bottom:14px;">Aniversariantes do mês</p>
+        <div class="card-grid" id="clientBirthdayGrid"></div>
+      </div>
     </section>
 
     <!-- ===================== RELATÓRIOS ===================== -->
@@ -417,6 +504,53 @@
         <button class="btn btn-primary" id="cardDownloadBtn"><i class="fa-solid fa-download"></i> Baixar cartão (PNG)</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: FORM CLIENTE (Empresa Parceira) ===== -->
+<div class="modal-overlay" id="clienteFormModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="clienteFormModalTitle">Nova Empresa Parceira</h2>
+      <button class="icon-btn" id="clienteFormModalClose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="clienteForm" class="modal-body">
+      <input type="hidden" id="cliId">
+      <div class="form-grid">
+        <div class="form-field span-2"><label>Nome / Razão Social *</label><input type="text" id="cliNome" required></div>
+        <div class="form-field"><label>Estado</label><input type="text" id="cliEstado" placeholder="UF"></div>
+        <div class="form-field"><label>Data de aniversário da empresa</label><input type="date" id="cliDataFundacao"></div>
+        <div class="form-field span-2"><label>Observações</label><input type="text" id="cliObs"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="clienteFormCancelBtn">Cancelar</button>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Salvar Empresa</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: FORM CONTATO ===== -->
+<div class="modal-overlay" id="contatoFormModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="contatoFormModalTitle">Novo Contato</h2>
+      <button class="icon-btn" id="contatoFormModalClose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="contatoForm" class="modal-body">
+      <input type="hidden" id="conId">
+      <div class="form-grid">
+        <div class="form-field span-2"><label>Nome do contato *</label><input type="text" id="conNome" required></div>
+        <div class="form-field"><label>Cargo</label><input type="text" id="conCargo"></div>
+        <div class="form-field"><label>Aniversário (DD/MM)</label><input type="text" id="conDiaMes" placeholder="Ex: 25/07" maxlength="5"></div>
+        <div class="form-field span-2"><label>Empresa / Razão Social</label><input type="text" id="conEmpresa"></div>
+        <div class="form-field span-2"><label>Observações</label><input type="text" id="conObs"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="contatoFormCancelBtn">Cancelar</button>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Salvar Contato</button>
+      </div>
+    </form>
   </div>
 </div>
 
